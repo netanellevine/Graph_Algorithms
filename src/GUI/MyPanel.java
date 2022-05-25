@@ -255,7 +255,7 @@ public class MyPanel extends JPanel {
         int[] Ypoints = {y2, (int) ym, (int) yn};
         g.drawLine(x1, y1, x2, y2);
         g.setColor(Color.black);
-        g.fillPolygon(Xpoints, Ypoints, 3);
+//        g.fillPolygon(Xpoints, Ypoints, 3);
     }
 
     private double middle(double x1, double x2){
