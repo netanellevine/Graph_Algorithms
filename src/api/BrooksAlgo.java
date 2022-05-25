@@ -193,7 +193,7 @@ public class BrooksAlgo {
 
         for (int vertex1 : order_to_build) {
             for (int vertex2 : curr_graph.getNode(vertex1).getNeighbours()) {
-                temp_graph.connect(vertex1, vertex2, curr_graph.getEdge(vertex1, vertex2).getWeight());
+                temp_graph.connect(vertex1, vertex2, 1);
             }
         }
         curr_component.init(temp_graph);
