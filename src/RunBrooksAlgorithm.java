@@ -44,7 +44,7 @@ public class RunBrooksAlgorithm {
     }
 
     public static void main(String[] args) {
-        BrooksAlgo Brooks = new BrooksAlgo(new GraphGen().generate_connected_graph(20));
+//        BrooksAlgo Brooks = new BrooksAlgo(new GraphGen().generate_connected_graph(20));
         new MyGraph_GUI(new GraphGen().generate_connected_graph(20));
 //        try {
 //            if(args[0].equals("random") || args[0].equals("Random")){

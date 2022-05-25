@@ -462,14 +462,15 @@ public class MyFrame extends JFrame implements ActionListener{
         }
 
         else if (clearItem.equals(event) || CLR.equals(event)) {
-            try {
-                MyGraph g = new MyGraph();
-                setVisible(false);
-                dispose();
-                new MyGraph_GUI(g);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            new MyGraph_GUI(new GraphGen().generate_connected_graph(20));
+//            try {
+//                MyGraph g = new MyGraph();
+//                setVisible(false);
+//                dispose();
+//                new MyGraph_GUI(g);
+//            } catch (Exception ex) {
+//                ex.printStackTrace();
+//            }
         }
 
         else if (resetItem.equals(event) || RESET.equals(event)) {
