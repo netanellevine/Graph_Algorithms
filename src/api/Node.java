@@ -72,7 +72,7 @@ public class Node implements NodeData {
     public void addInEdge(int key){
         inEdges.add(key);
         this.neighbours.add(key);
-        System.out.println(this.neighbours.size());
+//        System.out.println(this.neighbours.size());
         this.degree +=1;
     }
     public HashSet<Integer> inEdges(){
@@ -215,7 +215,7 @@ public class Node implements NodeData {
             if (!this.Edges.containsKey(e.getDest())) {
                 this.Edges.put(e.getDest(), e);
                 this.neighbours.add(e.getDest());
-                System.out.println(this.neighbours.size());
+//                System.out.println(this.neighbours.size());
             }
         }
     }
