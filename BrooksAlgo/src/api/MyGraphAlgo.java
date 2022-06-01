@@ -502,7 +502,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
     }
 
     public boolean is_clique(){
-        if (graph.edgeSize() == (graph .nodeSize() * graph.nodeSize()-1) / 2){
+        if (graph.edgeSize() == (graph.nodeSize() * (graph.nodeSize()-1))){
             return true;
         }
         return false;
