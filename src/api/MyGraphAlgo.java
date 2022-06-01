@@ -11,6 +11,9 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
     private int connected = -1;//-1 unknown, 0 no, 1 yes
     private int mc;
     private int keyToStart;
+    private  ArrayList<EdgeData> mach;
+    private ArrayList<NodeData> group_A;
+    private ArrayList<NodeData> group_B;
 
     /**
      * Choose the graph you will perform your algorithms on.
@@ -31,6 +34,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
      */
     @Override
     public DirectedWeightedGraph getGraph() {
+        set_bipartite();
         return this.graph;
     }
 
@@ -769,6 +773,121 @@ public NodeData isOneConnectedNode()
         }
         return treeRev;
     }
+//    protected LinkedList<EdgeData> augmenting() {
+//
+//    }
+
+    public boolean is_bipartite()
+    {
+        HashMap<Integer, Integer> color = new HashMap<>();
+        // init the colors
+        for (Iterator<NodeData> it = graph.nodeIter(); it.hasNext(); ) {
+            NodeData u = it.next();
+            color.put(u.getKey(), WHITE);
+        }
+
+        Queue<Integer> Q = new LinkedList<>();
+        Q.add(0);
+        while (!Q.isEmpty()) {
+            int u = Q.poll();
+            for (int v : Adj(u)) {
+                if (color.get(v) == WHITE) {
+                    color.put(v, 1 - color.get(u));
+                    Q.add(v);
+                }
+                else if (color.get(v) == color.get(u))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+
+
+    public void set_bipartite(){
+        this.group_A = new ArrayList<>();
+        this.group_B = new ArrayList<>();
+
+        for (Iterator<NodeData> it = graph.nodeIter(); it.hasNext(); ) {
+            NodeData u = it.next();
+            u.setVisited(false);
+            u.setTag(-1);
+        }
+        Queue<NodeData> Q = new LinkedList<>();
+        for (Iterator<NodeData> it = graph.nodeIter(); it.hasNext(); ) {
+            NodeData u = it.next();
+            if (u.getTag() != 1 && u.getTag() != 2) {
+                if (u.getKey() == 3){
+                    System.out.println();
+                }
+                if (AorB(u) == 1){
+                    this.group_A.add(u);
+                    u.setTag(1);
+                }
+                else{
+                    this.group_B.add(u);
+                    u.setTag(2);
+                }
+                Q.add(u);
+                while (!Q.isEmpty()) {
+                    u = Q.poll();
+                    for (int neigh : u.getNeighbours()) {
+                        NodeData v = this.graph.getNode(neigh);
+                        if (v.getTag() != 1 && v.getTag() != 2) {
+                            Q.add(v);
+                            if (u.getTag() == 2) {
+                                this.group_A.add(v);
+                                v.setTag(1);
+                            } else if(u.getTag() == 1){
+                                this.group_B.add(v);
+                                v.setTag(2);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (NodeData node : this.group_A) {
+            System.out.println(node.getKey());
+        }
+        System.out.println();
+        for (NodeData node : this.group_B) {
+            System.out.println(node.getKey());
+        }
+    }
+
+    public int AorB(NodeData n){
+        int counter = 0;
+        for (NodeData node : this.group_A){
+            if (!n.getNeighbours().contains(node.getKey())){
+                counter++;
+            }
+        }
+        if (counter == this.group_A.size()){
+            return 1;
+        }
+        for (NodeData node : this.group_B){
+            if (!n.getNeighbours().contains(node.getKey())){
+                counter++;
+            }
+        }
+        if (counter == this.group_B.size()){
+            return 2;
+        }
+        throw new IllegalArgumentException("Graph is not Bipartite!!");
+    }
+
+
+    // how to split the graph into two bipartite groups?
+    // 1. use BFS to find the first node that is not in the same group as the first node
+    // 2. use BFS to find the second node that is not in the same group as the second node
+    // 3. use BFS to find the third node that is not in the same group as the third node
+
+
+
+
+
+
 
 
 //    public static void main(String[] args) {

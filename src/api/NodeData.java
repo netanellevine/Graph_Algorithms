@@ -54,4 +54,7 @@ public interface NodeData {
 	public HashSet<Integer> getNeighbours();
 	public boolean isVisited();
 	public void setVisited(boolean visited);
+	public void setTag(int tag);
+	public int getTag();
+//	public HashSet<Integer> getNeighbours();
 }
