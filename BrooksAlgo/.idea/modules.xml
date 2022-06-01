@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/NewBrooks.iml" filepath="$PROJECT_DIR$/NewBrooks.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BrooksAlgo.iml" filepath="$PROJECT_DIR$/BrooksAlgo.iml" />
     </modules>
   </component>
 </project>
