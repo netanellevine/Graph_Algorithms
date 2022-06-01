@@ -520,10 +520,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
     }
 
     public boolean is_clique(){
-        if (graph.edgeSize() == (graph .nodeSize()* graph.nodeSize()-1) / 2){
-            return true;
-        }
-        return false;
+        return graph.edgeSize() == (graph.nodeSize() * graph.nodeSize() - 1) / 2;
 
     }
 
@@ -805,6 +802,9 @@ public NodeData isOneConnectedNode()
 
 
     public void set_bipartite(){
+        if (this.group_A != null || this.group_B != null) {
+            return;
+        }
         this.group_A = new ArrayList<>();
         this.group_B = new ArrayList<>();
 
@@ -812,6 +812,7 @@ public NodeData isOneConnectedNode()
             NodeData u = it.next();
             u.setVisited(false);
             u.setTag(-1);
+            u.setInfo(null);
         }
         Queue<NodeData> Q = new LinkedList<>();
         for (Iterator<NodeData> it = graph.nodeIter(); it.hasNext(); ) {
@@ -847,13 +848,13 @@ public NodeData isOneConnectedNode()
                 }
             }
         }
-        for (NodeData node : this.group_A) {
-            System.out.println(node.getKey());
-        }
-        System.out.println();
-        for (NodeData node : this.group_B) {
-            System.out.println(node.getKey());
-        }
+//        for (NodeData node : this.group_A) {
+//            System.out.println(node.getKey());
+//        }
+//        System.out.println();
+//        for (NodeData node : this.group_B) {
+//            System.out.println(node.getKey());
+//        }
     }
 
     public int AorB(NodeData n){
