@@ -6,18 +6,27 @@ public class BrooksAlgo
 {
     private DirectedWeightedGraph graph;
     private DirectedWeightedGraphAlgorithms graph_algo;
-    private ArrayList<DirectedWeightedGraphAlgorithms> Components = new ArrayList<>();
+    private ArrayList<DirectedWeightedGraph> graphsArray = new ArrayList<>();
+    private DirectedWeightedGraph original_graph;
 
     public BrooksAlgo(DirectedWeightedGraph OrigGraph) {
         SCC(OrigGraph);
     }
 
     public void BrooksColoring() {
-        for (DirectedWeightedGraphAlgorithms component: this.Components) {
-            this.graph_algo = component;
-            this.graph = component.getGraph();
+        for (DirectedWeightedGraph graphs: graphsArray) {
+            this.graph = graphs;
+            this.graph_algo = new MyGraphAlgo();
+            graph_algo.init(graph);
+
             int delta = this.graph_algo.getMaxDegree();
-            if (this.graph_algo.getMaxDegree() <= 2)
+            if (graphs.nodeSize() == 1)
+            {
+                NodeData node = graphs.getSomeNode();
+                node.setColor(1);
+                node.set_is_colored(true);
+            }
+            else if (this.graph_algo.getMaxDegree() <= 2)
             {
                 if (this.graph_algo.is_Odd_cycle())
                     greedyColor(arbitraryOrder());
@@ -63,7 +72,7 @@ public class BrooksAlgo
 
         }
 
-
+        setColorsToOriginal(graphsArray, original_graph);
     }
     public void oneConCase(ArrayList<DirectedWeightedGraph> graph_list, NodeData braker){
         if (graph_list.size() == 0)
@@ -180,31 +189,19 @@ public class BrooksAlgo
 
     public ArrayList<Integer> createPathOrder() {
         ArrayList<Integer> path = new ArrayList<Integer>();
-        int first = -1, last = -1;
-        boolean firstFound = false;
+        int first = -1;
         Iterator<NodeData> iter = this.graph_algo.getGraph().nodeIter();
-        while(iter.hasNext()){
-            if(iter.next().getDegree() == 1){
-                if(!firstFound) {
-                    first = iter.next().getKey();
-                    path.add(first);
-                    firstFound = true;
-                }
-                else{
-                    last = iter.next().getKey();
-                }
+        while(iter.hasNext())
+        {
+            NodeData node = iter.next();
+            if(node.getDegree() == 1)
+            {
+                first = node.getKey();
+                break;
             }
         }
-        path.add(this.graph.getNode(first).getNeighbours().iterator().next());
-        while (path.size() < this.graph.nodeSize() - 1){
-            for(int curr : this.graph.getNode(path.size() - 1).getNeighbours()){
-                if (!path.contains(curr)) {
-                    path.add(curr);
-                }
-            }
-        }
-        path.add(last);
-        return path;
+
+        return graph_algo.spanTree(first);
     }
 
     public ArrayList<Integer> buildEvenCircleOrder() {
@@ -260,29 +257,21 @@ public class BrooksAlgo
     }
 
     private void SCC(DirectedWeightedGraph OrigGraph){
-        ArrayList<Integer> curr_order;
-        for (Iterator<NodeData> it = OrigGraph.nodeIter(); it.hasNext(); ) {
-            it.next().setVisited(false); // reset all the visited params for the graph
-        }
+        original_graph = OrigGraph;
+        graph = OrigGraph;
+        graph_algo = new MyGraphAlgo();
+        graph_algo.init(OrigGraph);
+        graphsArray = graph_algo.getGraphsFromBreaker(null);
 
-        for (Iterator<NodeData> it = OrigGraph.nodeIter(); it.hasNext(); ) {
-            NodeData curr_node = it.next();
-            if (!curr_node.isVisited())
-            { // we haven't visited in this node yet
-                curr_order = DFS(OrigGraph, curr_node); // get the DFS tree for each component in the graph
-                this.Components.add(createSubGraph(OrigGraph, curr_order)); // build a graph for each component.
-            }
-        }
+
     }
 
     public int getNumberOfColors() {
         int max_color = 1;
-        Iterator node_iter = this.graph.nodeIter();
+        Iterator node_iter = this.original_graph.nodeIter();
         while (node_iter.hasNext()) {
             Node node = (Node) node_iter.next();
-            if (node.getColor() > max_color) {
-                max_color = node.getColor();
-            }
+            max_color = Math.max(node.getColor(), max_color);
         }
         return max_color;
     }

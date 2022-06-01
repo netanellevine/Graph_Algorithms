@@ -257,7 +257,8 @@ public class Node implements NodeData {
         this.visited = visited;
     }
 
-    public int getDegree() {
+    public int getDegree()
+    {
         return neighbours.size();
     }
     public void setDegree(int deg){

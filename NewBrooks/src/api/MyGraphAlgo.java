@@ -646,11 +646,10 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
 
     public ArrayList<DirectedWeightedGraph> getGraphsFromBreaker(NodeData nodeMain)
     {
-        if (nodeMain == null)
-            return new ArrayList<>();
-
         DirectedWeightedGraph original = this.copy();
-        original.removeNode(nodeMain.getKey());
+
+        if (nodeMain != null)
+            original.removeNode(nodeMain.getKey());
 
         ArrayList<DirectedWeightedGraph> retGrapsh = new ArrayList<>();
         MyGraphAlgo algoForGraph = new MyGraphAlgo();
@@ -683,6 +682,9 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
                 original.removeNode(bfsNodes.pop());
             }
         }
+
+        if (nodeMain == null)
+            return retGrapsh;
 
         // add to each graph the head node
         ArrayList<Integer> nodesNeigh = new ArrayList<>(nodeMain.getNeighbours());
@@ -774,34 +776,6 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
             for (int v : Adj(u)) {
                 if (color.containsKey(v) && color.get(v) == WHITE)
                 {
-                    color.put(v, GRAY);
-                    p.put(v, u);
-                    Q.add(v);
-                }
-            }
-            color.put(u, BLACK);
-            treeRev.push(u);
-        }
-        return treeRev;
-    }
-
-    public Stack<Integer> DFS_visit(int key)
-    {
-        HashMap<Integer, Integer> color = new HashMap<>();
-        HashMap<Integer, Integer> p = new HashMap<>();
-        // init the colors
-        for (Iterator<NodeData> it = graph.nodeIter(); it.hasNext(); ) {
-            NodeData u = it.next();
-            color.put(u.getKey(), WHITE);
-        }
-
-        Queue<Integer> Q = new LinkedList<>();
-        Q.add(key);
-        Stack<Integer> treeRev = new Stack<>();
-        while (!Q.isEmpty()) {
-            int u = Q.poll();
-            for (int v : Adj(u)) {
-                if (color.get(v) == WHITE) {
                     color.put(v, GRAY);
                     p.put(v, u);
                     Q.add(v);
