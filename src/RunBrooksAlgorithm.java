@@ -45,7 +45,13 @@ public class RunBrooksAlgorithm {
 
     public static void main(String[] args) {
 //        BrooksAlgo Brooks = new BrooksAlgo(new GraphGen().generate_connected_graph(20));
-        new MyGraph_GUI(new GraphGen().generate_connected_graph(20));
+//        new MyGraph_GUI(new GraphGen().generate_connected_graph(20));
+        MyGraphAlgo g = new MyGraphAlgo();
+        g.load("data/G1_bipartite.json");
+        g.set_bipartite();
+        System.out.println();
+//        new MyGraph_GUI(g.getGraph());
+
 //        try {
 //            if(args[0].equals("random") || args[0].equals("Random")){
 //                new MyGraph_GUI(new GraphGen().generate_connected_graph(20));

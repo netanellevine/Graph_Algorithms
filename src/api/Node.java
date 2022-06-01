@@ -14,6 +14,7 @@ public class Node implements NodeData {
     private String info;
     private boolean is_colored;
     private  int color;
+    private int tag;
     private HashSet<Integer> neighbours = new HashSet<>();
     private boolean visited = false;
 
@@ -107,6 +108,12 @@ public class Node implements NodeData {
         } else {
             throw new NullPointerException();
         }
+    }
+    public int getTag(){
+        return  this.tag;
+    }
+    public void setTag(int tag){
+        this.tag = tag;
     }
 
     /**
