@@ -48,7 +48,10 @@ public class RunBrooksAlgorithm {
 //        new MyGraph_GUI(new GraphGen().generate_connected_graph(20));
         MyGraphAlgo g = new MyGraphAlgo();
         g.load("data/G1_bipartite.json");
-        g.set_bipartite();
+        g.Hungarian();
+        for(EdgeData edge : g.match){
+            System.out.println(edge.getSrc() + " " + edge.getDest());
+        }
         System.out.println();
 //        new MyGraph_GUI(g.getGraph());
 

@@ -1,5 +1,7 @@
 package api;
 
+import com.sun.tools.javac.Main;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -11,7 +13,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
     private int connected = -1;//-1 unknown, 0 no, 1 yes
     private int mc;
     private int keyToStart;
-    private  ArrayList<EdgeData> mach;
+    public  HashSet<EdgeData> match;
     private ArrayList<NodeData> group_A;
     private ArrayList<NodeData> group_B;
 
@@ -23,6 +25,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         if (g != null) {
             this.graph = g;
             this.mc = this.graph.getMC();
+            this.match = new HashSet<>();
         }
 
     }
@@ -770,9 +773,137 @@ public NodeData isOneConnectedNode()
         }
         return treeRev;
     }
-//    protected LinkedList<EdgeData> augmenting() {
-//
-//    }
+    public void Hungarian(){
+        while (maxMatch() != null) {
+        }
+    }
+    public LinkedList<EdgeData> maxMatch() {
+
+        this.set_bipartite();
+        LinkedList<EdgeData> P;
+        if ((P = this.augmenting()) != null) {
+
+//            if (System.out == Main.original_stream) {
+//                // printing to shell
+//                System.out.println(MyColor.YELLOW_BACKGROUND_BRIGHT + "" + MyColor.BLUE_BOLD + "found aug path:"
+//                        + MyColor.RESET + "\n" + P);
+//            } else {
+//                // printing to console JDialoge in Gui
+//                System.out.println("found aug path:\n" + P);
+//            }
+            this.recolor(P);
+        } else {
+            for (Iterator<NodeData> it = graph.nodeIter(); it.hasNext(); )  {
+                NodeData n = it.next();
+                int n_key = n.getKey();
+                for (int ni : n.getNeighbours()) {
+                    EdgeData e = graph.getEdge(n_key, ni);
+                    if (e.isInMatch()) {
+                        this.match.add(e);
+                    }
+                }
+            }
+//            if (System.out == Main.original_stream) {
+//                // printing to shell
+//                System.out.println(MyColor.YELLOW_BACKGROUND_BRIGHT + "" + MyColor.BLUE_BOLD + "The Max Match Found:" + MyColor.RESET + "\n" + this.match);
+//            } else {
+//                // printing to console JDialoge in Gui
+//                System.out.println("The Max Match Found:\n" + this.match);
+//            }
+        }
+        return P;
+    }
+
+    protected void recolor(LinkedList<EdgeData> p) {
+        for (EdgeData n : p) {
+            n.setIsInMtch(!n.isInMatch());
+            if (n.isInMatch()) {
+                this.match.add(n);
+            } else {
+                this.match.remove(n);
+            }
+        }
+    }
+    private LinkedList<EdgeData> augmenting() {
+        for (Iterator<NodeData> it = graph.nodeIter(); it.hasNext(); ) {
+            NodeData u = it.next();
+            u.setTag(-1);
+            u.setInfo(null);
+        }
+//        ArrayList<NodeData> A = new ArrayList<>(this.group_A);
+//        ArrayList<NodeData> B = new ArrayList<>(this.group_B);
+        ArrayList<NodeData> am = NotBelongMatch(this.group_A);
+        ArrayList<NodeData> bm = NotBelongMatch(this.group_B);
+        Stack<NodeData> s = new Stack<>();
+        EdgeData tmp;
+        if (am.isEmpty() || bm.isEmpty()) {
+            return null;
+        }
+        for (NodeData cur : am) {
+            boolean flag = false;
+            if (cur.getTag() != 2) {
+                s.push(cur);
+                while (!s.isEmpty()) {
+                    cur = s.pop();
+                    cur.setTag(2);
+                    int cur_key = cur.getKey();
+                    if (cur_key == 11) {
+                        System.out.println("");
+                    }
+                    for (int nei : cur.getNeighbours()) {
+                        NodeData n = graph.getNode(nei);
+                        if (n.getKey() == 11) {
+                            System.out.println("");
+                        }
+                        if (n.getTag() != 2 && !am.contains(n)) {
+                            tmp = graph.getEdge(cur_key, n.getKey());
+                            if (tmp.isInMatch() == flag) {
+                                n.setInfo("" + cur.getKey());
+                                s.push(n);
+                                if (bm.contains(n)) {
+                                    return buildAugPath(n);
+                                }
+                            }
+                        }
+                    }
+                    flag = !flag;
+                }
+            }
+        }
+        return null;
+
+
+    }
+
+    private LinkedList<EdgeData> buildAugPath(NodeData n) {
+        LinkedList<EdgeData> res = new LinkedList<>();
+        NodeData cur = n;
+        while (n.getInfo() != null) {
+            cur = graph.getNode(Integer.parseInt(n.getInfo()));
+            res.addFirst(graph.getEdge(n.getKey(), cur.getKey()));
+            n = cur;
+        }
+
+        return res;
+    }
+
+    private ArrayList<NodeData> NotBelongMatch(ArrayList<NodeData> col){
+        ArrayList<NodeData> res = new ArrayList<>();
+            for (EdgeData e : this.match) {
+                NodeData first = this.graph.getNode(e.getSrc());
+                NodeData second = this.graph.getNode(e.getDest());
+                if (col.remove(first)) {
+                    res.add(first);
+                }
+                if (col.remove(second)) {
+                    res.add(second);
+                }
+            }
+            ArrayList<NodeData> temp = col;
+            col = res;
+            res = temp;
+            return res;
+    }
 
     public boolean is_bipartite()
     {

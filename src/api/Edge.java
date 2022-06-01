@@ -5,6 +5,7 @@ public class Edge implements EdgeData{
     private final int dest;
     private final double weight;
     private String info;
+    private boolean IsInMatch;
 
     // need to fill
 
@@ -21,6 +22,7 @@ public class Edge implements EdgeData{
         this.src = src;
         this.dest = dest;
         this.weight = weight;
+        this.IsInMatch = false;
     }
 
     /**
@@ -33,6 +35,7 @@ public class Edge implements EdgeData{
         this.weight = e.getWeight();
         this.tag=e.getTag();
         this.info=e.getInfo();
+        this.IsInMatch = e.isInMatch();
     }
 
     /**
@@ -117,6 +120,12 @@ public class Edge implements EdgeData{
 //                ", weight = " + weight +
 //                "}";
 //    }
+public boolean isInMatch(){
+        return this.IsInMatch;
+}
+    public void setIsInMtch(boolean flag){
+        this.IsInMatch = flag;
+    }
 @Override
 public String toString(){
         return "{\n"+'"'+"src"+'"'+": "+src+",\n"+'"'+"w"+'"'+": "+weight+",\n"+'"'+"dest"+'"'+": "+dest+"\n}";
