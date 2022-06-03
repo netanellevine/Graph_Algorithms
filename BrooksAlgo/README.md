@@ -20,3 +20,13 @@ To run the project please enter:
 ```
 java -jar BrooksAlgo.jar
 ```
+
+for the option of creating a clique graph please run this line:
+```
+java -jar BrooksAlgo.jar -c <num_of_nodes>
+```
+
+for generating a graph of n nodes please enter this line:
+```
+java -jar BrooksAlgo.jar -r <num_of_nodes>
+```
