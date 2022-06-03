@@ -56,5 +56,7 @@ public interface NodeData {
 	public void setVisited(boolean visited);
 	public void addNeighbour(NodeData node);
 	public void removeNeighbour(NodeData node);
+	public int getTag();
+	public void setTag(int tag);
 
 }

@@ -99,4 +99,6 @@ public interface DirectedWeightedGraph {
  * @return
  */
 	public int getMC();
+
+	public void resetColors();
 }

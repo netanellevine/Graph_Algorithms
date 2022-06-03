@@ -12,7 +12,7 @@ public class MyPanel extends JPanel {
     private final MyGraphAlgo graph;
     //    private Algorithms copyOfGraph;
     private NodeData center;
-    private boolean isCenterActivated, isPathActivated, isTSPActivated, isBrooksActivated;
+    private boolean isCenterActivated, isPathActivated, isTSPActivated, isBrooksActivated, isHungarianActivated;
     private List<NodeData> pathByNodes;
     private List<NodeData> pathByNodesTSP;
     private int src, dest;
@@ -32,6 +32,7 @@ public class MyPanel extends JPanel {
         this.isPathActivated = false;
         this.isTSPActivated = false;
         this.isBrooksActivated = false;
+        this.isHungarianActivated = false;
         this.src = -1;
         this.dest = -1;
         this.pathByNodes = new LinkedList<>();
@@ -66,7 +67,16 @@ public class MyPanel extends JPanel {
         Iterator<EdgeData> edgesIter = graph.getGraph().edgeIter();
         while (edgesIter.hasNext()) {
             EdgeData e = edgesIter.next();
-            g2d.setPaint(Color.black);
+            EdgeData e_rev = graph.getGraph().getEdge(e.getDest(), e.getSrc());
+            if(this.isHungarianActivated){
+                if (e.isInMatch() || e_rev.isInMatch()) {
+                    g2d.setPaint(Color.RED);
+                }
+                else {
+                    g2d.setPaint(Color.BLACK);
+                }
+            }
+            else {g2d.setPaint(Color.black);}
             double srcX = (graph.getGraph().getNode(e.getSrc()).getLocation().x() - minX) * scaleX * 0.98 + 30;
             double srcY = (graph.getGraph().getNode(e.getSrc()).getLocation().y() - minY) * scaleY * 0.98 + 30;
             double destX = (graph.getGraph().getNode(e.getDest()).getLocation().x() - minX) * scaleX * 0.98 + 30;
@@ -76,7 +86,7 @@ public class MyPanel extends JPanel {
             int x2 = (int) destX;
             int y2 = (int) destY;
             g2d.setStroke(new BasicStroke(3));
-            g2d.setPaint(Color.black);
+//            g2d.setPaint(Color.black);
             drawArrowLine(g2d, x1, y1, x2, y2, 15, 7);
             // to draw the weights for now will keep it as comment.
 //            double medX = middle(x1, x2);
@@ -273,6 +283,10 @@ public class MyPanel extends JPanel {
 
     public void setBrooksActivated(boolean brooksActivated) {
         this.isBrooksActivated = brooksActivated;
+    }
+
+    public void setHungarianActivated(boolean HungarianActivated) {
+        this.isHungarianActivated = HungarianActivated;
     }
 
     public void setRandomColors(ArrayList<Color> random_colors) {this.random_colors = random_colors;}

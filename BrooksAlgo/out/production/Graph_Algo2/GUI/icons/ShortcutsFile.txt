@@ -1,0 +1,25 @@
+﻿ 1 - File menu
+	* Load a File                                            ALT+F+L
+	* Save a File                                             ALT+F+S
+	* Clear the Frame                                    ALT+F+C
+	* Reset to the last Graph loaded            ALT+F+R
+	* Exit the program                                  ALT+F+E
+	
+ 2 - Edit menu
+	* Add new Node                                      ALT+E+A
+	* Add new Edge                                      ALT+E+S
+	* Remove  Node                                      ALT+E+D
+	* Remove  Edge                                      ALT+E+F
+	
+ 3 - Algorithms menu
+	* isConnected                                          ALT+A+I
+	* ShortestPath                                         ALT+A+S
+	* Center of the Graph                             ALT+A+C
+	* TSP                                                       ALT+A+T
+	
+ 4 - View menu
+	* Hide buttons bar                                  ALT+V+H
+	* Show buttons bar                                  ALT+V+S
+	* Set Full Screen                                      ALT+V+F
+	* Set Default scale                                   ALT+V+D
+	* Set Costume scale                                 ALT+V+C

@@ -27,6 +27,7 @@ public class MyFrame extends JFrame implements ActionListener{
     private String outputText;
     private int width, height;
     private ArrayList<Color> random_colors;
+    // private Boolean Hungarian_flag = false;
 
     // All menus
     JMenuBar menuBar;
@@ -55,6 +56,7 @@ public class MyFrame extends JFrame implements ActionListener{
     JMenuItem centerItem;
     JMenuItem TSPItem;
     JMenuItem BrooksItem;
+    JMenuItem HungarianItem;
 
     // View menu
     JMenuItem hideButtonsItem;
@@ -82,6 +84,8 @@ public class MyFrame extends JFrame implements ActionListener{
     JButton LOAD;
     JButton SAVE;
     JButton Brooks;
+    JButton Hungarian;
+    JButton stepByStep;
 
 
     public MyFrame(DirectedWeightedGraph g){
@@ -193,18 +197,23 @@ public class MyFrame extends JFrame implements ActionListener{
         centerItem = new JMenuItem("Center                  (Alt+A+C)");
         TSPItem = new JMenuItem("TSP                       (Alt+A+T)");
         this.BrooksItem = new JMenuItem("Brooks coloring (Alt+A+B)");
+        HungarianItem = new JMenuItem("Hungarian max-matching    (Alt+A+H)");
+
+
 
         isConnectedItem.addActionListener(this);
         shortestPath.addActionListener(this);
         centerItem.addActionListener(this);
         TSPItem.addActionListener(this);
         this.BrooksItem.addActionListener(this);
+        this.HungarianItem.addActionListener(this);
 
         algorithmsMenu.add(isConnectedItem);
         algorithmsMenu.add(shortestPath);
         algorithmsMenu.add(centerItem);
         algorithmsMenu.add(TSPItem);
         this.algorithmsMenu.add(this.BrooksItem);
+        this.algorithmsMenu.add(this.HungarianItem);
 
 
         // View menu
@@ -267,6 +276,8 @@ public class MyFrame extends JFrame implements ActionListener{
         centerItem.setMnemonic(KeyEvent.VK_C); // c
         TSPItem.setMnemonic(KeyEvent.VK_T); // t
         this.BrooksItem.setMnemonic(KeyEvent.VK_B); // b
+        this.HungarianItem.setMnemonic(KeyEvent.VK_H); //H
+
 
         // Shortcuts for viewMenu.
         viewMenu.setMnemonic(KeyEvent.VK_V); // Alt + v
@@ -377,18 +388,30 @@ public class MyFrame extends JFrame implements ActionListener{
         this.Brooks.addActionListener(this);
         this.Brooks.setBackground(Color.ORANGE);
 
+        this.Hungarian = new JButton("Hungarian Max-Matching");
+        this.Hungarian.setFocusable(false);
+        this.Hungarian.addActionListener(this);
+        this.Hungarian.setBackground(Color.PINK);
+
+        this.stepByStep = new JButton("Step By Step Hungarian");
+        this.stepByStep.addActionListener(this);
+        this.stepByStep.setBackground(Color.MAGENTA);
+
+
 
         buttonsPanel.add(IC);
         buttonsPanel.add(TSP);
         buttonsPanel.add(CE);
         this.buttonsPanel.add(this.Brooks);
-        buttonsPanel.add(RN);
-        buttonsPanel.add(RE);
-        buttonsPanel.add(AN);
-        buttonsPanel.add(AE);
+        this.buttonsPanel.add(this.Hungarian);
+        this.buttonsPanel.add(this.stepByStep);
+        //buttonsPanel.add(RN);
+        //buttonsPanel.add(RE);
+        //buttonsPanel.add(AN);
+        //buttonsPanel.add(AE);
         buttonsPanel.add(LOAD);
-        buttonsPanel.add(SAVE);
-        buttonsPanel.add(CLR);
+        //buttonsPanel.add(SAVE);
+        //buttonsPanel.add(CLR);
         buttonsPanel.add(RESET);
 
 
@@ -406,7 +429,7 @@ public class MyFrame extends JFrame implements ActionListener{
         if (loadItem.equals(event) || LOAD.equals(event)) {
             this.outputText += "\n Load Graph activated.";
             JFileChooser loadFile = new JFileChooser();
-            loadFile.setCurrentDirectory(new File("."));
+            loadFile.setCurrentDirectory(new File("./data"));
             int approved = loadFile.showOpenDialog(null);
             if (approved == JFileChooser.APPROVE_OPTION) {
                 ParseToGraph pd = null;
@@ -1068,33 +1091,73 @@ public class MyFrame extends JFrame implements ActionListener{
                 }
             }
         }
-        else if (this.Brooks.equals(event) || this.BrooksItem.equals(event)) {
+        else if (this.Brooks.equals(event) || this.BrooksItem.equals(event))
+        {
             this.outputText += "\n Brooks coloring Activated.";
             this.brooksAlgo = new BrooksAlgo(graph);
             this.brooksAlgo.BrooksColoring();
+
+            //setting the colors
             this.random_colors = new ArrayList<>();
             for (int i = 0; i < this.brooksAlgo.getNumberOfColors(); i++) {
                 Random rand = new Random();
                 Color randomColor = new Color(rand.nextInt(0xFFFFFF));
                 this.random_colors.add(randomColor);
             }
+            //update the colors on log window
+            this.outputText += "\n" + "There are " + random_colors.size() + " colors";
             this.mainPanel.setRandomColors(this.random_colors);
             this.mainPanel.setBrooksActivated(true);
-
-
-            this.outputText += "\n isConnected Activated.";
-            boolean ans = algo.isConnected();
-            String output = ans ? "This graph is strongly connected!" : "This graph is not strongly connected!";
-            JOptionPane.showOptionDialog(null,
-                    output,
-                    "IsConnected",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE,
-                    null,
-                    null,
-                    null);
-            this.outputText += "\n " + output;
         }
+
+
+        else if (this.Hungarian.equals(event) || this.HungarianItem.equals(event)) {
+            if (!this.algo.is_bipartite()){
+                JOptionPane.showOptionDialog(null,
+                        "Please enter a Bipartite graph!",
+                        "INVALID INPUT!",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.ERROR_MESSAGE,
+                        null,
+                        null,
+                        null);
+            }else {
+                this.outputText += "\n Hungarian Max-Matching coloring.";
+                this.outputText += "\n " + this.algo.match.toString();
+                this.algo.Hungarian();
+                this.mainPanel.setHungarianActivated(true);
+                repaint();
+            }
+        }
+        else if (this.stepByStep.equals(event)){
+            if (!this.algo.is_bipartite()){
+                JOptionPane.showOptionDialog(null,
+                        "Please enter a Bipartite graph!",
+                        "INVALID INPUT!",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.ERROR_MESSAGE,
+                        null,
+                        null,
+                        null);
+            }else {
+                this.outputText += "\n Click this button to see the augmenting path each time.";
+                if (this.algo.maxMatch() != null) {
+                    this.mainPanel.setHungarianActivated(true);
+                    repaint();
+                } else {
+                    JOptionPane.showOptionDialog(null,
+                            "There is no more steps!",
+                            "DONE!",
+                            JOptionPane.DEFAULT_OPTION,
+                            JOptionPane.ERROR_MESSAGE,
+                            null,
+                            null,
+                            null);
+
+                }
+            }
+        }
+
 
         // VIEW
 

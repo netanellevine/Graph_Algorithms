@@ -5,6 +5,7 @@ public class Edge implements EdgeData{
     private final int dest;
     private final double weight;
     private String info;
+    private boolean IsInMatch;
 
     // need to fill
 
@@ -117,6 +118,12 @@ public class Edge implements EdgeData{
 //                ", weight = " + weight +
 //                "}";
 //    }
+    public void setIsInMtch( boolean flag){
+        this.IsInMatch = flag;
+    }
+    public boolean isInMatch(){
+        return this.IsInMatch;
+    }
 @Override
 public String toString(){
         return "{\n"+'"'+"src"+'"'+": "+src+",\n"+'"'+"w"+'"'+": "+weight+",\n"+'"'+"dest"+'"'+": "+dest+"\n}";

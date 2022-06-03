@@ -16,6 +16,7 @@ public class Node implements NodeData {
     private  int color;
     private HashSet<Integer> neighbours = new HashSet<>();
     private boolean visited = false;
+    private int tag;
 
 //    private boolean black = false;
 
@@ -29,6 +30,7 @@ public class Node implements NodeData {
         this.id = id;
         this.location = new Location(x, y, 0);
         this.neighbours = new HashSet<>();
+        is_colored = false;
     }
 
     /**
@@ -293,6 +295,13 @@ public class Node implements NodeData {
             this.neighbours.remove(node.getKey());
         }
     }
+    public int getTag(){
+        return  this.tag;
+    }
+    public void setTag(int tag){
+        this.tag = tag;
+    }
+
 }
 
 

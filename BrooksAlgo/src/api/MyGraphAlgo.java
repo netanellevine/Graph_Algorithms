@@ -11,6 +11,9 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
     private int connected = -1;//-1 unknown, 0 no, 1 yes
     private int mc;
     private int keyToStart;
+    public  HashSet<EdgeData> match;
+    private ArrayList<NodeData> group_A;
+    private ArrayList<NodeData> group_B;
 
     /**
      * Choose the graph you will perform your algorithms on.
@@ -20,6 +23,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         if (g != null) {
             this.graph = g;
             this.mc = this.graph.getMC();
+            this.match = new HashSet<>();
         }
 
     }
@@ -601,53 +605,52 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         }
         return num1deg == 2;
     }
+
+    /**
+     * returns if the graph is one conected
+     * @return
+     */
     public boolean isOneConnected()
     {
-        Iterator<NodeData> nodeItr =  this.graph.nodeIter();
-        DirectedWeightedGraph original = this.copy();
-        boolean retAns = false;
-        while (nodeItr.hasNext())
-        {
-            NodeData node = nodeItr.next();
-            MyGraphAlgo algTemp = new MyGraphAlgo();
-            DirectedWeightedGraph copyGraph = new MyGraph(original);
-            copyGraph.removeNode(node.getKey());
-            algTemp.init(copyGraph);
-
-            if (!algTemp.isConnected())
-            {
-                retAns = true;
-                break;
-            }
-        }
-        return retAns;
+        return (isOneConnectedNode() != null);
     }
+
+    /**
+     * check if the graph
+     * @return
+     */
     public NodeData isOneConnectedNode()
     {
         Iterator<NodeData> nodeItr =  this.graph.nodeIter();
         DirectedWeightedGraph original = this.copy();
-        NodeData retAns = null;
+
         while (nodeItr.hasNext())
         {
             NodeData node = nodeItr.next();
-            MyGraphAlgo algTemp = new MyGraphAlgo();
+            // make a copy of the graph and remove the current node
             DirectedWeightedGraph copyGraph = new MyGraph(original);
             copyGraph.removeNode(node.getKey());
+            // create a new algo class
+            MyGraphAlgo algTemp = new MyGraphAlgo();
             algTemp.init(copyGraph);
 
+            // if the removal made more than one component than its one connected
             if (!algTemp.isConnected())
-            {
-                retAns = node;
-                break;
-            }
+                return node;
         }
-        return retAns;
+        return null;
     }
 
+    /**
+     * return the graphs that come after splitting by a node, the graphs will contain the original node
+     * @param nodeMain the breaker, if null then the output will be the components
+     * @return
+     */
     public ArrayList<DirectedWeightedGraph> getGraphsFromBreaker(NodeData nodeMain)
     {
+        // create a copy of the graph - that is the main copy
         DirectedWeightedGraph original = this.copy();
-
+        // if node is not null then remove from the original copy
         if (nodeMain != null)
             original.removeNode(nodeMain.getKey());
 
@@ -655,6 +658,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         MyGraphAlgo algoForGraph = new MyGraphAlgo();
         algoForGraph.init(original);
 
+        // while the original copy has nodes than create graphs
         while(original.nodeSize() > 0)
         {
             // copy the graph
@@ -669,10 +673,9 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
             HashSet<Integer> hashConection = new HashSet<>(bfsNodes);
             for (int node : arrNodes)
             {
-                if (!hashConection.contains(node)) // if the node is not in the bfs then remove it
-                {
+                // if the node is not in the bfs then remove it
+                if (!hashConection.contains(node))
                     tempGraph.removeNode(node);
-                }
             }
             retGrapsh.add(tempGraph);
 
@@ -682,7 +685,7 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
                 original.removeNode(bfsNodes.pop());
             }
         }
-
+        // if null then don't continue
         if (nodeMain == null)
             return retGrapsh;
 
@@ -696,7 +699,9 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
             {
                 if (retGrapsh.get(i).getNode(nodeId) != null)
                 {
+                    // add the node by its neighbors to the graph
                     DirectedWeightedGraph temp_g = retGrapsh.get(i);
+                    // add the original
                     temp_g.addNode(nodeMain);
                     temp_g.connect(nodeMain.getKey(), nodeId, 1.0);
                     temp_g.connect(nodeId, nodeMain.getKey(),1.0);
@@ -709,22 +714,35 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         return retGrapsh;
     }
 
+    /**
+     * by given graph it returns the nodes keys as int arraylist
+     * @param graph
+     * @return
+     */
     public static ArrayList<Integer> nodesListInt(DirectedWeightedGraph graph)
     {
         ArrayList<Integer> arrInt = new ArrayList<>();
         Iterator<NodeData> nodeItr = graph.nodeIter();
         while (nodeItr.hasNext())
         {
+            // add each key to the array
             arrInt.add(nodeItr.next().getKey());
         }
         return arrInt;
     }
 
+    /**
+     * return a spanning tree that each node is coming before its children - using BFS
+     * @param key the node id key
+     * @return the order of the spanning tree
+     */
     public ArrayList<Integer> spanTree(int key)
     {
+        // get the bfs outcome
         Stack<Integer> treeRev = BFS_visit(key);
         ArrayList<Integer> spanTreeArray = new ArrayList<>();
 
+        // set all the nodes to regular arraylist
         while (!treeRev.empty())
         {
             spanTreeArray.add(graph.getNode(treeRev.pop()).getKey());
@@ -733,11 +751,17 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         return spanTreeArray;
     }
 
+    /**
+     * return the neighbors by key
+     * @param key node id
+     * @return
+     */
     public ArrayList<Integer> Adj(int key)
     {
         HashSet<Integer> adjHash = new HashSet<>();
         for (Iterator<EdgeData> it = graph.edgeIter(); it.hasNext(); )
         {
+            // if the node is in the edge return its neighbor
             EdgeData edg = it.next();
             if (edg.getSrc() == key)
                 adjHash.add(edg.getDest());
@@ -747,6 +771,11 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         return new ArrayList<>(adjHash);
     }
 
+    /**
+     * same as Adj but with given node and not node id
+     * @param node
+     * @return
+     */
     public ArrayList<Integer> Adj(NodeData node)
     {
         if (node != null)
@@ -758,6 +787,11 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
     public static final int GRAY = 1;
     public static final int BLACK = 2;
 
+    /**
+     * BFS algorithm - it returns the BFS backwards
+     * @param key
+     * @return
+     */
     public Stack<Integer> BFS_visit(int key)
     {
         HashMap<Integer, Integer> color = new HashMap<>();
@@ -773,7 +807,9 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
         Stack<Integer> treeRev = new Stack<>();
         while (!Q.isEmpty()) {
             int u = Q.poll();
-            for (int v : Adj(u)) {
+            for (int v : Adj(u))
+            {
+                // if the node is not in the graph than its from another component
                 if (color.containsKey(v) && color.get(v) == WHITE)
                 {
                     color.put(v, GRAY);
@@ -788,15 +824,259 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
     }
 
 
-//    public static void main(String[] args) {
-//        DirectedWeightedGraphAlgorithms algorithms = new MyGraphAlgo();
-//        algorithms.init(new graphGen().generate_connected_graph(20));
-//        algorithms.getGraph().removeNode(9);
-//        List<NodeData> c = new LinkedList<>();
-//        Iterator<NodeData> i = algorithms.getGraph().nodeIter();
-//        while (i.hasNext())
-//            c.add(i.next());
-//        c = algorithms.tsp(c);
-//        System.out.println("h");
-//    }
+    //****************************//***************************//
+                     //taliya
+
+    /**
+     * while we have Augmenting path - we cwn maximize the matching
+     */
+    public void Hungarian() {
+        if(!this.is_bipartite()){
+            throw new IllegalArgumentException("Graph is not Bipartite!!");
+        }
+       else{ while (maxMatch() != null) {
+        }
+    }
+    }
+
+    public LinkedList<EdgeData> maxMatch() {
+            this.set_bipartite();
+            LinkedList<EdgeData> P;
+            if ((P = this.augmentingPath()) != null) {
+                this.recolor(P);
+            } else { //make sure we add all the Edges to the match
+                for (Iterator<NodeData> it = graph.nodeIter(); it.hasNext(); ) {
+                    NodeData n = it.next();
+                    int n_key = n.getKey();
+                    for (int ni : n.getNeighbours()) {
+                        EdgeData e1 = graph.getEdge(n_key, ni);
+                        EdgeData e2 = graph.getEdge(ni,n_key);
+                        if (e1.isInMatch()) {
+                            this.match.add(e1);
+                        } if (e2.isInMatch()) {
+                            this.match.add(e2);
+                        }
+
+                    }
+                }
+            }
+            return P;
+    }
+
+    /**
+     * after finding Augmenting path-
+     * change "inside edge" and "outside edge" for increasing the match
+     */
+    protected void recolor(LinkedList<EdgeData> p) {
+        for (EdgeData n : p) {
+            n.setIsInMtch(!n.isInMatch());
+            if (n.isInMatch()) {
+                this.match.add(n);
+            } else {
+                this.match.remove(n);
+            }
+        }
+    }
+
+    private void reset(){
+        for (Iterator<NodeData> it = graph.nodeIter(); it.hasNext(); ) {
+            NodeData u = it.next();
+            u.setTag(-1);
+            u.setInfo(null);
+        }
+
+    }
+
+    /**
+     * find the augmenting Path
+     * by finding path start with Am's node and end with Bm's node
+     */
+
+    private LinkedList<EdgeData> augmentingPath() {
+        reset();
+        ArrayList<NodeData> am = NotBelongMatch(this.group_A);
+        ArrayList<NodeData> bm = NotBelongMatch(this.group_B);
+        Stack<NodeData> s = new Stack<>();
+        EdgeData tmp_Edge1;
+        EdgeData tmp_Edge2;
+        if (am.isEmpty() || bm.isEmpty()) {
+            return null;
+        }
+        for (NodeData cur : am) {
+            boolean flag = false;
+            if (cur.getTag() != 2) {
+                s.push(cur);
+                while (!s.isEmpty()) {
+                    cur = s.pop();
+                    cur.setTag(2);
+                    int cur_key = cur.getKey();
+                    for (int nei : cur.getNeighbours()) {
+                        NodeData n = graph.getNode(nei);
+                        if (n.getTag() != 2 && !am.contains(n)) {
+                            tmp_Edge1 = graph.getEdge(n.getKey(),cur_key);
+                            tmp_Edge2 = graph.getEdge(cur_key,n.getKey());
+                            if (tmp_Edge1.isInMatch() == flag || tmp_Edge2.isInMatch() == flag ) {
+                                n.setInfo("" + cur.getKey());
+                                s.push(n);
+                                if (bm.contains(n)) {
+                                    return buildAugPath(n);
+                                }
+                            }
+                        }
+                    }
+                    // change between "in M" to "out M" respectively
+                    flag = !flag;
+                }
+            }
+        }
+        return null;
+
+
+    }
+    /**
+     * this function restores the Augmenting path by the info of the nodes
+    */
+
+    private LinkedList<EdgeData> buildAugPath(NodeData n) {
+        LinkedList<EdgeData> res = new LinkedList<>();
+        NodeData cur = n;
+        while (n.getInfo() != null) {
+            cur = graph.getNode(Integer.parseInt(n.getInfo()));
+            res.addFirst(graph.getEdge(cur.getKey(), n.getKey()));
+            res.addFirst(graph.getEdge(n.getKey(),cur.getKey()));
+            n = cur;
+        }
+
+        return res;
+    }
+
+
+
+    /**
+     *
+     * @return Returns the unsatisfied set from the input nodes
+     */
+    private ArrayList<NodeData> NotBelongMatch(ArrayList<NodeData> col){
+        ArrayList<NodeData> res = new ArrayList<>();
+        for (EdgeData e : this.match) {
+            NodeData first = this.graph.getNode(e.getSrc());
+            NodeData second = this.graph.getNode(e.getDest());
+            if (col.remove(first)) {
+                res.add(first);
+            }
+            if (col.remove(second)) {
+                res.add(second);
+            }
+        }
+        ArrayList<NodeData> temp = col;
+        col = res;
+        res = temp;
+        return res;
+    }
+
+
+    /**
+     *
+     * @return if this algo graph is bipartite graph
+     */
+    public boolean is_bipartite()
+    {
+        HashMap<Integer, Integer> color = new HashMap<>();
+        // init the colors - first all the nodes with the same color
+        for (Iterator<NodeData> it = graph.nodeIter(); it.hasNext(); ) {
+            NodeData u = it.next();
+            color.put(u.getKey(), WHITE);
+        }
+
+        Queue<Integer> Q = new LinkedList<>();
+        Q.add(0);
+        while (!Q.isEmpty()) {
+            int u = Q.poll();
+            for (int v : Adj(u)) {
+                if (color.get(v) == WHITE) {
+                    color.put(v, 1 - color.get(u));
+                    Q.add(v);
+                }
+                else if (color.get(v) == color.get(u))
+                    return false;
+                //If two neighbors got the same color that is not white
+                // then it can not be divided into 2 groups of vertices
+            }
+        }
+        return true;
+    }
+
+    /**
+    * Checks which group to add the next node to
+     */
+    public int AorB(NodeData n) {
+        int counter = 0;
+        for (NodeData node : this.group_A) {
+            if (!n.getNeighbours().contains(node.getKey())) {
+                counter++;
+            }
+        }
+        if (counter == this.group_A.size()) {
+            return 1;
+        }
+        for (NodeData node : this.group_B) {
+            if (!n.getNeighbours().contains(node.getKey())) {
+                counter++;
+            }
+        }
+        if (counter == this.group_B.size()) {
+            return 2;
+        }
+    return -1;
+    }
+
+
+    /**
+     * this function divides the nodes into 2 groups: A and B
+     */
+    public void set_bipartite(){
+        if (this.group_A != null || this.group_B != null) {
+            return;
+        }
+        this.group_A = new ArrayList<>();
+        this.group_B = new ArrayList<>();
+        reset();
+        Queue<NodeData> Q = new LinkedList<>();
+        for (Iterator<NodeData> it = graph.nodeIter(); it.hasNext(); ) {
+            NodeData u = it.next();
+            if (u.getTag() != 1 && u.getTag() != 2) {
+                if (u.getKey() == 3){
+                    System.out.println();
+                }
+                if (AorB(u) == 1){
+                    this.group_A.add(u);
+                    u.setTag(1);
+                }
+                else{
+                    this.group_B.add(u);
+                    u.setTag(2);
+                }
+                Q.add(u);
+                while (!Q.isEmpty()) {
+                    u = Q.poll();
+                    for (int neigh : u.getNeighbours()) {
+                        NodeData v = this.graph.getNode(neigh);
+                        if (v.getTag() != 1 && v.getTag() != 2) {
+                            Q.add(v);
+                            if (u.getTag() == 2) {
+                                this.group_A.add(v);
+                                v.setTag(1);
+                            } else if(u.getTag() == 1){
+                                this.group_B.add(v);
+                                v.setTag(2);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+
 }

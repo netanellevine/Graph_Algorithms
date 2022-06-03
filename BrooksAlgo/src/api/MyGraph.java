@@ -220,6 +220,16 @@ public class MyGraph implements DirectedWeightedGraph {
         return edge;
     }
 
+    public void resetColors()
+    {
+        for (int nodeId: _nodeHash.keySet())
+        {
+            NodeData node = getNode(nodeId);
+            node.set_is_colored(false);
+            node.setColor(0);
+        }
+    }
+
     @Override
     public int nodeSize()
     {
