@@ -1104,6 +1104,7 @@ public class MyFrame extends JFrame implements ActionListener{
                 Color randomColor = new Color(rand.nextInt(0xFFFFFF));
                 this.random_colors.add(randomColor);
             }
+
             //update the colors on log window
             this.outputText += "\n" + "There are " + random_colors.size() + " colors";
             this.mainPanel.setRandomColors(this.random_colors);

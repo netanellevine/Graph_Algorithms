@@ -1,7 +1,6 @@
 package api;
 
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 public class GraphGen {
     /**
@@ -14,18 +13,55 @@ public class GraphGen {
      * @param numOfNodes number of nodes
      * @return
      */
-    public MyGraph generate_connected_graph(int numOfNodes){
-        HashMap<Integer, Node> nodes = new HashMap<>();
+    public static MyGraph generate_perfect_graph(int numOfNodes){
         Random rand = new Random();
+        MyGraph graph = new MyGraph();
         for(int i=0;i<numOfNodes;i++){
-            nodes.put(i,new Node(rand.nextDouble()*100,rand.nextDouble()*100,i));
+            graph.addNode(new Node(rand.nextDouble()*100,rand.nextDouble()*100,i));
         }
-        for(int i=0;i<numOfNodes;i++){
-            Edge e = new Edge(i,(i+1)%numOfNodes,rand.nextDouble()*10);
-            nodes.get(i).getEdges().put(i+1,e);
-            nodes.get((i+1)%numOfNodes).inEdges().add(i);
+        int counter = 0;
+        for(int i=0; i < numOfNodes; i++)
+        {
+            for (int j = 0; j < numOfNodes; j++)
+            {
+                if (i == j)
+                    continue;
+                graph.connect(i, j, 1.0);
+                counter++;
+            }
         }
-        return new MyGraph();
+        return graph;
+    }
+
+    public static MyGraph generate_connected_graph(int numOfNodes){
+        MyGraph graph = generate_perfect_graph(numOfNodes);
+        Random rand = new Random();
+
+        HashSet<Integer[]> hashSet = new HashSet<>();
+        Iterator<EdgeData> edgeIt = graph.edgeIter();
+        while (edgeIt.hasNext())
+        {
+            EdgeData edge = edgeIt.next();
+            int src = Math.min(edge.getSrc(), edge.getDest());
+            int dest = Math.max(edge.getSrc(), edge.getDest());
+            hashSet.add(new Integer[]{src, dest});
+        }
+
+        ArrayList<Integer[]> arrEdges = new ArrayList<>(hashSet);
+        int numOfEdgesRemove = rand.nextInt(arrEdges.size() - arrEdges.size()/4) + arrEdges.size()/4;
+        for(int i = 0; i < numOfEdgesRemove; i++)
+        {
+            int index = rand.nextInt(arrEdges.size());
+            Integer[] arr = arrEdges.get(index);
+            int src = arr[0];
+            int dest = arr[1];
+            if (graph.getNode(src).getDegree() == 1 || graph.getNode(dest).getDegree() == 1)
+                continue;
+            graph.removeEdge(src, dest);
+            graph.removeEdge(dest, src);
+            arrEdges.remove(index);
+        }
+        return graph;
     }
 
     /**
