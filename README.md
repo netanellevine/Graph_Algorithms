@@ -1,9 +1,5 @@
 # Weighted Directed Graphs
 
-## Assignment 2 - Object Oriented Programming
-
-**Netanel Levine**<br>
-**Yanir Cohen**
 --- 
 
 ## About
