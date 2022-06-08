@@ -69,7 +69,7 @@ public class BrooksAlgo
                 node.setColor(1);
                 node.set_is_colored(true);
             }
-            else if (this.graph_algo.getMaxDegree() <= 2)
+            else if (delta <= 2)
             {
                 // if the graph is odd cycle then make arbitrary order
                 if (this.graph_algo.is_Odd_cycle())
