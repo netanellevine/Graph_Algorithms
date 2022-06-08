@@ -1146,6 +1146,7 @@ public class MyFrame extends JFrame implements ActionListener{
                 this.outputText += "\n Hungarian Max-Matching coloring.";
                 this.algo.match.clear();
                 this.algo.Hungarian();
+                this.outputText += "\n" + "There are " + this.algo.match.size() + " edges in the match.";
                 printEdgesToLog();
                 this.mainPanel.setEdgesToColor(this.algo.match);
                 this.mainPanel.setHungarianActivated(true);
@@ -1179,6 +1180,7 @@ public class MyFrame extends JFrame implements ActionListener{
                             null,
                             null,
                             null);
+                    this.outputText += "\n" + "There are " + this.algo.match.size() + " edges in the match.";
                 }
             }
         }
@@ -1189,6 +1191,7 @@ public class MyFrame extends JFrame implements ActionListener{
             edmondsAlgo.update_match();
             this.algo.match = edmondsAlgo.get_match();
             this.outputText += "\nEdmonds Blossom Max-Matching coloring.";
+            this.outputText += "\n" + "There are " + this.algo.match.size() + " edges in the match.";
             printEdgesToLog();
             this.mainPanel.setEdgesToColor(this.algo.match);
             this.mainPanel.setEdmondActivated(true);
