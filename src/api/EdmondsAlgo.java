@@ -85,7 +85,7 @@ public class EdmondsAlgo {
     }
 
     /*
-     * perform the main bfs of the admonds algorithm. build a bfs tree from a given
+     * perform the main bfs of the Edmonds algorithm. build a bfs tree from a given
      * root (node), allowing a backtracking on the tree.
      *
      * @param root
@@ -188,25 +188,21 @@ public class EdmondsAlgo {
 
         path.add(src);
         curr = src;
-        // untill curr is not the dest or -1 (wich all had been set)
+        // until curr is not the dest or -1 (which all had been set)
         while (curr != dest && curr != -1)
         {
             var nei = tree.Neighbours(g.getNode(curr));
-            if (nei.size() == 1) {
+            if (nei.size() == 1)
+            {
                 // only one way to go
                 curr = nei.iterator().next();
-                if (curr == -1){
-                    System.out.println("error");
-                }
-            } else if (nei.size() == 2) {
-
+            }
+            else if (nei.size() == 2)
+            {
                 // go forward, not backward
                 for (int n : nei) {
-                    if (n!= prev) {
+                    if (n != prev) {
                         curr = n;
-                        if (curr == -1){
-                            System.out.println("error");
-                        }
                         break;
                     }
                 }
@@ -214,16 +210,13 @@ public class EdmondsAlgo {
             // a junction in the tree
             else {
                 // go to mate, only 1 option as your mate is your parent
-                int temp = curr;
                 curr = getMate(curr);
             }
-
             prev = path.getLast();
             if (curr != -1)
                 path.add(curr);
         }
         return path;
-
     }
 
     /*
@@ -261,7 +254,7 @@ public class EdmondsAlgo {
      *
      * @param path
      */
-    void augment(List<EdgeData> path) { // achiya
+    void augment(List<EdgeData> path) {
 
         path.forEach((e) -> {
             e.setIsInMtch(!e.isInMatch());

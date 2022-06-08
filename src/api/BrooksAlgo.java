@@ -141,19 +141,17 @@ public class BrooksAlgo
     public ArrayList<Integer> XYZ_Case(int[] xyz)
     {
         this.graph.getNode(xyz[1]).setColor(1); //y and z are not neighbors so they can be colored the same color
+        this.graph.getNode(xyz[1]).set_is_colored(true);
         this.graph.getNode(xyz[2]).setColor(1);
+        this.graph.getNode(xyz[2]).set_is_colored(true);
+
         DirectedWeightedGraph copy = graph_algo.copy();
-        DirectedWeightedGraph org = graph_algo.copy();
-        //remove y and z
-        copy.removeNode(xyz[1]);
-        copy.removeNode(xyz[2]);
-        this.graph = copy;
-        this.graph_algo.init(this.graph);
-        ArrayList<Integer> order = this.graph_algo.spanTree(xyz[0]); // spanning Tree without y,z
-        this.graph = org; //back to the original graph with y and z
+        this.graph_algo.init(copy);
+
+        // the spanning tree will skip y,z
+        ArrayList<Integer> order = this.graph_algo.spanTree(xyz[0]);
         this.graph_algo.init(this.graph);
         return order;
-
     }
 
     public DirectedWeightedGraph G_withoutYZ(int[] yz){

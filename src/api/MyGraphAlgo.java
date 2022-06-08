@@ -520,25 +520,22 @@ public class MyGraphAlgo implements DirectedWeightedGraphAlgorithms {
 
     public int[] find_xyz(){
         int[] ans = new int[3];
-        Iterator<NodeData> it_x = graph.nodeIter();
-        Iterator<NodeData> it_y = graph.nodeIter();
-        Iterator<NodeData> it_z = graph.nodeIter();
-        while (it_x.hasNext()){
-            while ((it_y.hasNext())){
-                while (it_z.hasNext()){
-                    int key_x = it_x.next().getKey();
-                    int key_y = it_y.next().getKey();
-                    int key_z = it_z.next().getKey();
-                    if(key_x != key_y && key_x !=key_z && key_y != key_z){
-                        if(graph.getEdge(key_x,key_y)!=null &&
-                                graph.getEdge(key_x,key_z)!=null && graph.getEdge(key_y,key_z)==null){
-                                ans[0] = key_x;
-                                ans[1] = key_y;
-                                ans[2] = key_z;
+        ArrayList<Integer> nodes = nodesListInt(this.graph);
+        // run on all the nodes
+        for (int x : nodes)
+        {
+            for (int y: nodes)
+            {
+                for (int z: nodes)
+                {
+                    if (x != y && x != z && z != y)
+                    {
+                        // if (x,y) and (x,z) exists and (y,z) doesn't, return the nodes
+                        if (graph.getEdge(x,y) != null && graph.getEdge(x,z) != null && graph.getEdge(y,z) == null)
+                        {
+                            return new int[]{x, y, z};
                         }
-
                     }
-
                 }
             }
         }
