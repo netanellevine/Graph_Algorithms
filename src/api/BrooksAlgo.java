@@ -86,6 +86,12 @@ public class BrooksAlgo
             {
                 greedyColor(arbitraryOrder());
             }
+            else if (this.graph_algo.is_Kregular()) // if the graph is k regular perform the xyz trio
+            {
+                int[] xyz = this.graph_algo.find_xyz();
+                ArrayList<Integer> order = XYZ_Case(xyz);
+                greedyColor(order);
+            }
             else if (this.graph_algo.isOneConnected())  // if the graph is one connected
             {
                 NodeData breaker = this.graph_algo.isOneConnectedNode();    // get the node that makes the break
@@ -93,15 +99,9 @@ public class BrooksAlgo
                 ArrayList<DirectedWeightedGraph> graph_list = this.graph_algo.getGraphsFromBreaker(breaker);
                 oneConCase(graph_list, breaker);    // set it to the case
             }
-            else if (!this.graph_algo.is_Kregular())    // this is not a K-regular graph
+            else
             {
                 greedyColor(this.graph_algo.spanTree(this.graph_algo.KeyToStart()));
-            }
-            else    // else create the order of the trio
-            {
-                int[] xyz = this.graph_algo.find_xyz();
-                ArrayList<Integer> order = XYZ_Case(xyz);
-                greedyColor(order);
             }
 
         }
