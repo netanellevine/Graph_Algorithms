@@ -84,9 +84,6 @@ public class SuperNode {
 
         // add all the edges and nodes to the graph
         for (EdgeData edge : this.super_nodes.get(decompress)) {
-            // restore removed nodes
-            NodeData src = this.g.getNode(edge.getSrc());
-            NodeData dest = this.g.getNode(edge.getDest());
 
             // connect the reserved edge
             this.g.connect(edge.getSrc(), edge.getDest(), 1);
